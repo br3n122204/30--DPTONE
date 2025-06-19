@@ -209,25 +209,22 @@ export default function DPTOneFashion() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Black Side Panels */}
-      <div className="fixed left-0 top-0 w-16 h-full bg-black z-10"></div>
-      <div className="fixed right-0 top-0 w-16 h-full bg-black z-10"></div>
+      {/* Black Side Panels for visual effect */}
+      <div className="fixed left-0 top-0 w-16 h-full bg-black z-10" aria-hidden="true"></div>
+      <div className="fixed right-0 top-0 w-16 h-full bg-black z-10" aria-hidden="true"></div>
 
       {/* Main Content Container */}
-      <div className="mx-16">
-        {/* Header */}
-        {/* The previous header content has been moved to app/layout.tsx */}
-
+      <main className="mx-16">
         {/* Image Slider */}
         <ImageSlider />
 
         {/* Featured Products Section */}
-        <section className="py-12">
+        <section className="py-12" aria-labelledby="featured-products-heading">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center mb-8">Featured Products</h2>
+            <h2 id="featured-products-heading" className="text-3xl font-bold text-center mb-8">Featured Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden">
+                <Card key={product.id} className="overflow-hidden" tabIndex={0} aria-label={product.name}>
                   <CardContent className="p-0">
                     <div
                       className="relative aspect-square"
@@ -239,6 +236,8 @@ export default function DPTOneFashion() {
                         alt={product.name}
                         fill
                         className="object-cover transition-opacity duration-300"
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        priority={product.id <= 4}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-300" />
                     </div>
@@ -248,6 +247,7 @@ export default function DPTOneFashion() {
                       <Button
                         onClick={() => handleAddToCart(product)}
                         className="w-full mt-2 bg-black text-white hover:bg-gray-800"
+                        aria-label={`Add ${product.name} to cart`}
                       >
                         Add to Cart
                       </Button>
@@ -258,7 +258,7 @@ export default function DPTOneFashion() {
             </div>
           </div>
         </section>
-      </div>
+      </main>
     </div>
   )
 }

@@ -161,6 +161,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      {/* Main Auth Card */}
       <div key={`${pathname}${searchParams.toString()}`} className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2 text-gray-800">
@@ -174,7 +175,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" aria-label={isSignUp ? 'Sign up form' : 'Sign in form'}>
           {isSignUp && (
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -189,6 +190,7 @@ export default function LoginPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isLoading}
+                autoComplete="name"
               />
             </div>
           )}
@@ -206,6 +208,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              autoComplete={isSignUp ? "new-email" : "email"}
             />
           </div>
 
@@ -222,17 +225,23 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              autoComplete={isSignUp ? "new-password" : "current-password"}
+              minLength={6}
+              aria-describedby="passwordHelp"
             />
+            {isSignUp && (
+              <p id="passwordHelp" className="text-xs text-gray-500 mt-1">Password must be at least 6 characters.</p>
+            )}
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm text-center p-2 bg-red-50 rounded-md">
+            <div className="text-red-600 text-sm text-center p-2 bg-red-50 rounded-md" role="alert">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="text-green-600 text-sm text-center p-2 bg-green-50 rounded-md">
+            <div className="text-green-600 text-sm text-center p-2 bg-green-50 rounded-md" role="status">
               {success}
             </div>
           )}
@@ -243,6 +252,7 @@ export default function LoginPage() {
               isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isLoading}
+            aria-busy={isLoading}
           >
             {isLoading 
               ? (isSignUp ? "Creating Account..." : "Signing In...") 
@@ -256,6 +266,7 @@ export default function LoginPage() {
             onClick={toggleMode}
             className="text-sm text-gray-600 hover:text-gray-800 underline"
             disabled={isLoading}
+            aria-label={isSignUp ? 'Switch to sign in' : 'Switch to sign up'}
           >
             {isSignUp 
               ? "Already have an account? Sign in" 

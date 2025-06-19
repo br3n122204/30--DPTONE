@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChevronLeft, ChevronRight, Menu, ShoppingCart } from "lucide-react"
@@ -10,6 +10,7 @@ import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 import UserProfile from '@/components/UserProfile'
 import { useRouter } from 'next/navigation'
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Sample slider images data
 const sliderImages = [
@@ -39,28 +40,36 @@ const sliderImages = [
   },
 ]
 
-// Sample products data
-const featuredProducts = [
+// Sample products data with type
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  backImage: string;
+}
+
+const featuredProducts: Product[] = [
   {
     id: 1,
     name: "Strap White Tee",
     price: "₱550.00",
     image: "/images/products/strap-white-tee.jpg",
-    backImage: "/images/products/strap-white-tee-back.jpg", // Placeholder back image
+    backImage: "/images/products/strap-white-tee-back.jpg",
   },
   {
     id: 2,
     name: "Richboyz White Tee",
     price: "₱550.00",
     image: "/images/products/richboyz-white-tee.jpg",
-    backImage: "/images/products/richboyz-white-tee-back.jpg", // Updated back image
+    backImage: "/images/products/richboyz-white-tee-back.jpg",
   },
   {
     id: 3,
     name: "Charlotte Folk White Tee",
     price: "₱550.00",
     image: "/images/products/charlottefolk-white-tee.jpg",
-    backImage: "/images/products/charlottefolk-white-tee-back.jpg", // Updated back image
+    backImage: "/images/products/charlottefolk-white-tee-back.jpg",
   },
   {
     id: 4,
@@ -199,8 +208,13 @@ export default function DPTOneFashion() {
   const { cartItems, addToCart } = useCart()
   const { user } = useAuth()
   const router = useRouter()
+  // Loading state for demo
+  const [loading, setLoading] = useState(false)
 
-  const handleAddToCart = (product: any) => {
+  // Memoize product list for performance
+  const products = useMemo(() => featuredProducts, [])
+
+  const handleAddToCart = (product: Product) => {
     if (!user) {
       router.push('/login')
       return
@@ -223,39 +237,50 @@ export default function DPTOneFashion() {
         <section className="py-12" aria-labelledby="featured-products-heading">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 id="featured-products-heading" className="text-3xl font-bold text-center mb-8">Featured Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden" tabIndex={0} aria-label={product.name}>
-                  <CardContent className="p-0">
-                    <div
-                      className="relative aspect-square"
-                      onMouseEnter={() => setHoveredProduct(product.id)}
-                      onMouseLeave={() => setHoveredProduct(null)}
-                    >
-                      <Image
-                        src={hoveredProduct === product.id ? product.backImage : product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover transition-opacity duration-300"
-                        sizes="(max-width: 768px) 100vw, 25vw"
-                        priority={product.id <= 4}
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-300" />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold">{product.name}</h3>
-                      <p className="text-gray-600">{product.price}</p>
-                      <Button
-                        onClick={() => handleAddToCart(product)}
-                        className="w-full mt-2 bg-black text-white hover:bg-gray-800"
-                        aria-label={`Add ${product.name} to cart`}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" role="list" aria-label="Featured products grid">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, idx) => (
+                  <Skeleton key={idx} className="h-80 w-full rounded-lg" />
+                ))
+              ) : products.length === 0 ? (
+                <div className="col-span-full text-center text-gray-500">No featured products available.</div>
+              ) : (
+                products.map((product) => (
+                  <Card key={product.id} className="overflow-hidden" tabIndex={0} aria-label={product.name}>
+                    <CardContent className="p-0">
+                      <div
+                        className="relative aspect-square"
+                        onMouseEnter={() => setHoveredProduct(product.id)}
+                        onMouseLeave={() => setHoveredProduct(null)}
                       >
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        <Image
+                          src={hoveredProduct === product.id ? product.backImage : product.image}
+                          alt={product.name + (hoveredProduct === product.id ? ' back' : ' front')}
+                          fill
+                          className="object-cover transition-opacity duration-300"
+                          sizes="(max-width: 768px) 100vw, 25vw"
+                          priority={product.id <= 4}
+                          placeholder="blur"
+                          blurDataURL="/placeholder.jpg"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.jpg' }}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-300" />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold">{product.name}</h3>
+                        <p className="text-gray-600">{product.price}</p>
+                        <Button
+                          onClick={() => handleAddToCart(product)}
+                          className="w-full mt-2 bg-black text-white hover:bg-gray-800"
+                          aria-label={`Add ${product.name} to cart`}
+                        >
+                          Add to Cart
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         </section>

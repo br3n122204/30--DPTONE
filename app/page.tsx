@@ -225,7 +225,7 @@ export default function DPTOneFashion() {
       router.push('/login')
       return
     }
-    addToCart(product)
+    addToCart({ ...product, quantity: 1 })
   }
 
   return (

@@ -11,6 +11,7 @@ import { auth } from "@/lib/firebase";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
+// --- LoginPage (Sign In / Sign Up) ---
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

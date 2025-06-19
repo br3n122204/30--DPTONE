@@ -193,6 +193,7 @@ function ImageSlider() {
   )
 }
 
+// --- DPTOneFashion Homepage ---
 export default function DPTOneFashion() {
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
   const { cartItems, addToCart } = useCart()

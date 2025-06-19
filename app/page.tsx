@@ -129,38 +129,44 @@ function ImageSlider() {
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {sliderImages.map((slide) => (
-          <div key={slide.id} className="relative w-full h-full flex-shrink-0">
-            {/* Blurred background image */}
-            <Image
-              src={slide.image}
-              alt={slide.title} 
-              fill
-              className="object-cover blur-md scale-110"
-            />
-            {/* Overlay to dim the blurred background */}
-            <div className="absolute inset-0 bg-black bg-opacity-30"></div>
-
-            {/* Main, unblurred image (positioned in upper 70%) */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[70%] flex items-center justify-center p-4">
+        {sliderImages.map((slide, idx) => {
+          // Improved: Check if the current slide index is valid
+          const isValid = currentSlide >= 0 && currentSlide < sliderImages.length;
+          const imageSrc = isValid ? slide.image : "/images/placeholder.jpg";
+          const imageAlt = isValid ? slide.title : "Image not found";
+          return (
+            <div key={slide.id} className="relative w-full h-full flex-shrink-0">
+              {/* Blurred background image */}
               <Image
-                src={slide.image}
-                alt={slide.title}
-                width={500} 
-                height={400} 
-                className="object-contain max-w-full max-h-full"
+                src={imageSrc}
+                alt={imageAlt}
+                fill
+                className="object-cover blur-md scale-110"
               />
-            </div>
+              {/* Overlay to dim the blurred background */}
+              <div className="absolute inset-0 bg-black bg-opacity-30"></div>
 
-            {/* Text Overlay (positioned in lower 30%) */}
-            <div className="absolute bottom-0 left-0 right-0 h-[30%] flex items-center justify-center text-center p-4 z-20">
-              <div>
-                <h2 className={`text-4xl font-bold mb-2 text-white`}>{slide.title}</h2>
-                <p className={`text-lg opacity-90 text-white`}>{slide.subtitle}</p>
+              {/* Main, unblurred image (positioned in upper 70%) */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[70%] flex items-center justify-center p-4">
+                <Image
+                  src={imageSrc}
+                  alt={imageAlt}
+                  width={500}
+                  height={400}
+                  className="object-contain max-w-full max-h-full"
+                />
+              </div>
+
+              {/* Text Overlay (positioned in lower 30%) */}
+              <div className="absolute bottom-0 left-0 right-0 h-[30%] flex items-center justify-center text-center p-4 z-20">
+                <div>
+                  <h2 className={`text-4xl font-bold mb-2 text-white`}>{isValid ? slide.title : "Slide not found"}</h2>
+                  <p className={`text-lg opacity-90 text-white`}>{isValid ? slide.subtitle : "This slide could not be loaded."}</p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Navigation Arrows */}

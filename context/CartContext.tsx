@@ -35,21 +35,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }, 0).toFixed(2);
   };
 
-  const addToCart = (productToAdd: CartItem) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find(item => item.id === productToAdd.id && item.selectedSize === productToAdd.selectedSize);
+  const addToCart = (item: CartItem) => {
+    setCartItems((currentCart) => {
+      // Find index of matching item (by id and selectedSize)
+      const idx = currentCart.findIndex(
+        cartItem => cartItem.id === item.id && cartItem.selectedSize === item.selectedSize
+      );
 
-      if (existingItem) {
-        // If item already exists (same ID and size), update quantity
-        return prevItems.map(item =>
-          item.id === productToAdd.id && item.selectedSize === productToAdd.selectedSize
-            ? { ...item, quantity: item.quantity + productToAdd.quantity }
-            : item
+      // Ensure quantity is a positive integer, default to 1
+      const validQuantity = Number.isInteger(item.quantity) && item.quantity > 0 ? item.quantity : 1;
+
+      if (idx !== -1) {
+        // Update quantity for existing item
+        return currentCart.map((cartItem, i) =>
+          i === idx
+            ? { ...cartItem, quantity: cartItem.quantity + validQuantity }
+            : cartItem
         );
-      } else {
-        // Otherwise, add new item
-        return [...prevItems, { ...productToAdd, quantity: productToAdd.quantity || 1 }];
       }
+      // Add new item with valid quantity
+      return [...currentCart, { ...item, quantity: validQuantity }];
     });
   };
 

@@ -3,7 +3,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCriQCH5NI8zdjSL9SzfUIWG_hS8V0EjAA",
+  apiKey: "AIzaSyC_1234567890abcdefghijklmnopqrstuvwxyz",
   authDomain: "dpt-one-e-commerce.firebaseapp.com",
   projectId: "dpt-one-e-commerce",
   storageBucket: "dpt-one-e-commerce.firebasestorage.app",

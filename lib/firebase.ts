@@ -1,14 +1,14 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from 'firebase/app'; 
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC39P1ozcNetx3x92S4E5d7VuF-110B4c0",
-  authDomain: "clothing-website-6c9a7.firebaseapp.com",
-  projectId: "clothing-website-6c9a7",
-  storageBucket: "clothing-website-6c9a7.firebasestorage.app",
-  messagingSenderId: "418353291258",
-  appId: "1:418353291258:web:4042ce495230cdb2ec4e43"
+  apiKey: "AIzaSyCriQCH5NI8zdjSL9SzfUIWG_hS8V0EjAA",
+  authDomain: "dpt-one-e-commerce.firebaseapp.com",
+  projectId: "dpt-one-e-commerce",
+  storageBucket: "dpt-one-e-commerce.firebasestorage.app",
+  messagingSenderId: "100600391381",
+  appId: "1:100600391381:web:a77039043d41715e48645c"
 };
 
 // Initialize Firebase

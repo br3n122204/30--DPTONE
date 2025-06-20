@@ -10,14 +10,13 @@ import {
 import { auth } from "@/lib/firebase";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Toaster, toast } from 'sonner';
 
 // --- LoginPage (Sign In / Sign Up) ---
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const searchParams = useSearchParams();
@@ -32,9 +31,6 @@ export default function LoginPage() {
     } else {
       setIsSignUp(false);
     }
-    // Clear any existing messages when mode changes
-    setError("");
-    setSuccess("");
   }, [searchParams, pathname]);
 
   useEffect(() => {
@@ -61,31 +57,28 @@ export default function LoginPage() {
     setEmail("");
     setPassword("");
     setName("");
-    setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     
     if (!email || !password) {
-      setError("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      toast.error("Password must be at least 6 characters long.");
       return;
     }
 
     if (isSignUp && !name.trim()) {
-      setError("Please enter your name.");
+      toast.error("Please enter your name.");
       return;
     }
 
@@ -107,13 +100,14 @@ export default function LoginPage() {
         await signOut(auth);
         
         // Show success message and clear form
-        setSuccess("Account created successfully! You can now sign in with your credentials.");
+        toast.success("Account created successfully! You can now sign in.");
         clearForm();
         
         console.log('User account created successfully');
       } else {
         // Sign in existing user
         await signInWithEmailAndPassword(auth, email, password);
+        toast.success('Signed in successfully! Redirecting...');
         console.log('User signed in successfully');
         // Router will handle redirect in useEffect
       }
@@ -123,22 +117,22 @@ export default function LoginPage() {
       // Handle specific Firebase auth errors
       switch (err.code) {
         case 'auth/email-already-in-use':
-          setError("An account with this email already exists. Use another email or sign in instead.");
+          toast.error("An account with this email already exists.");
           break;
         case 'auth/user-not-found':
-          setError("No account found with this email. Please sign up instead.");
+          toast.error("No account found with this email.");
           break;
         case 'auth/wrong-password':
-          setError("Incorrect password. Please try again.");
+          toast.error("Incorrect password. Please try again.");
           break;
         case 'auth/invalid-email':
-          setError("Invalid email address.");
+          toast.error("Invalid email address.");
           break;
         case 'auth/weak-password':
-          setError("Password is too weak. Please choose a stronger password.");
+          toast.error("Password is too weak. Please choose a stronger password.");
           break;
         default:
-          setError(err.message || "Authentication failed. Please try again.");
+          toast.error(err.message || "Authentication failed. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -148,8 +142,6 @@ export default function LoginPage() {
   const toggleMode = () => {
     const newMode = !isSignUp;
     setIsSignUp(newMode);
-    setError("");
-    setSuccess("");
     clearForm();
     
     // Update the URL to reflect the current mode
@@ -162,6 +154,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <Toaster richColors />
       {/* Main Auth Card */}
       <div key={`${pathname}${searchParams.toString()}`} className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
@@ -234,18 +227,6 @@ export default function LoginPage() {
               <p id="passwordHelp" className="text-xs text-gray-500 mt-1">Password must be at least 6 characters.</p>
             )}
           </div>
-
-          {error && (
-            <div className="text-red-600 text-sm text-center p-2 bg-red-50 rounded-md" role="alert">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="text-green-600 text-sm text-center p-2 bg-green-50 rounded-md" role="status">
-              {success}
-            </div>
-          )}
 
           <button
             type="submit"
